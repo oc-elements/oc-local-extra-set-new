@@ -12,85 +12,85 @@ Element used for capturing a new local extra set
 
 <dom-module id="oc-local-extra-set-new">
 
-  <style>
-    :host {
-      display: block;
-    }
-  </style>
-
-  <template>
-    <oc-local-product-extras-api id="extrasApi"></oc-local-product-extras-api>
-    <oc-extra-set-new
-            id="newExtraSetControl"
-            on-create-extra-set="_onCreateExtraSet"
-            on-create-extra="_onCreateExtra"
-            on-delete-extra="_onDeleteExtra"
-    ></oc-extra-set-new>
-  </template>
-
-  <script>
-    Polymer({
-      is: 'oc-local-extra-set-new',
-
-      properties: {
-        organisationId: Number,
-        loading: {
-          type: Boolean,
-          value: false,
-          notify: true
+    <style>
+        :host {
+            display: block;
         }
-      },
+    </style>
 
-      _onCreateExtraSet: function(event) {
-        this.loading = true;
-        this.$.extrasApi.createExtraSet(event.detail)
-                .then(function(response) {
-                  var resp = response.xhr.getAllResponseHeaders();
-                  this._extraSetId = resp.substring(resp.lastIndexOf("/")+1).trim();
-                  this.$.newExtraSetControl.setExtras([]);
-                  this.$.newExtraSetControl.showExtrasList(true);
-                }.bind(this))
-                .catch(this.fire.bind(this, 'extra-error', 'Could not create extra set'))
-                .finally(this.set.bind(this, 'loading', false));
-      },
+    <template>
+        <oc-local-product-extras-api id="extrasApi"></oc-local-product-extras-api>
+        <oc-extra-set-new
+                id="newExtraSetControl"
+                on-create-extra-set="_onCreateExtraSet"
+                on-create-extra="_onCreateExtra"
+                on-delete-extra="_onDeleteExtra"
+        ></oc-extra-set-new>
+    </template>
 
-      _onCreateExtra: function(event) {
-        this.loading = true;
-        this.$.extrasApi.createExtra(this.organisationId,
-                {
-                  name: event.detail.name,
-                  price: event.detail.price,
-                  description: event.detail.description,
-                  setId: this._optionSetId})
-                .then(function() {this._refreshExtras()}.bind(this))
-                .catch(function() {
-                  this.fire('extras-error', 'Could not create extra');
-                  this.loading = false;
-                }.bind(this));
-      },
+    <script>
+        Polymer({
+            is: 'oc-local-extra-set-new',
 
-      _refreshExtras: function() {
-        this.loading = true;
-        this.$.extrasApi.getExtraSet(this._extraSetId)
-                .then(function(response) {
-                  this.$.newExtraSetControl.setExtras(response.response.extras);
-                }.bind(this))
-                .catch(this.fire.bind(this, 'extras-error', 'Could not load extra set'))
-                .finally(function () {
-                  this.$.newExtraSetControl.showNewExtraInput(false);
-                  this.loading = false;
-                }.bind(this));
-      },
+            properties: {
+                organisationId: Number,
+                loading: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                }
+            },
 
-      _onDeleteExtra: function(event) {
-        this.loading = true;
-        this.$.extrasApi.deleteExtra(event.detail.id)
-                .then(function () {
-                  this._refreshExtras();
-                }.bind(this))
-                .catch(this.fire.bind(this, 'extras-error', 'Could not delete extra'))
-      }
+            _onCreateExtraSet: function(event) {
+                this.loading = true;
+                this.$.extrasApi.createExtraSet(event.detail)
+                        .then(function(response) {
+                            var resp = response.xhr.getAllResponseHeaders();
+                            this._extraSetId = resp.substring(resp.lastIndexOf("/")+1).trim();
+                            this.$.newExtraSetControl.setExtras([]);
+                            this.$.newExtraSetControl.showExtrasList(true);
+                        }.bind(this))
+                        .catch(this.fire.bind(this, 'extra-error', 'Could not create extra set'))
+                        .finally(this.set.bind(this, 'loading', false));
+            },
 
-    });
-  </script>
+            _onCreateExtra: function(event) {
+                this.loading = true;
+                this.$.extrasApi.createExtra(this.organisationId,
+                        {
+                            name: event.detail.name,
+                            price: event.detail.price,
+                            description: event.detail.description,
+                            setId: this._extraSetId})
+                        .then(function() {this._refreshExtras()}.bind(this))
+                        .catch(function() {
+                            this.fire('extras-error', 'Could not create extra');
+                            this.loading = false;
+                        }.bind(this));
+            },
+
+            _refreshExtras: function() {
+                this.loading = true;
+                this.$.extrasApi.getExtraSet(this._extraSetId)
+                        .then(function(response) {
+                            this.$.newExtraSetControl.setExtras(response.response.extras);
+                        }.bind(this))
+                        .catch(this.fire.bind(this, 'extras-error', 'Could not load extra set'))
+                        .finally(function () {
+                            this.$.newExtraSetControl.showNewExtraInput(false);
+                            this.loading = false;
+                        }.bind(this));
+            },
+
+            _onDeleteExtra: function(event) {
+                this.loading = true;
+                this.$.extrasApi.deleteExtra(event.detail.id)
+                        .then(function () {
+                            this._refreshExtras();
+                        }.bind(this))
+                        .catch(this.fire.bind(this, 'extras-error', 'Could not delete extra'))
+            }
+
+        });
+    </script>
 </dom-module>
